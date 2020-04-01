@@ -4,6 +4,7 @@ import re
 import gzip 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from urlparse import urlparse, parse_qs
+from urllib import unquote, quote
 import SocketServer
 
 
@@ -256,15 +257,15 @@ class Serv(BaseHTTPRequestHandler):
     
     def _set_headers(self):
         self.send_response(200)
-        self.send_header('Content-type', 'text/html')
+        self.send_header('Content-type', 'text/plain;charset=utf-8')
         self.end_headers()
     def do_GET(self):
         self._set_headers()
-        query_components = parse_qs(urlparse(self.path).query)
+        query_components = parse_qs(unquote(urlparse(self.path).query))
         text = ""          
         for w in query_components["sentence"][0].split():
             if w in known_words:
-                text+=" "+known_words[w]
+                text+=" " +known_words[w]
                 continue
             wc = -1
             if w in word_count:
